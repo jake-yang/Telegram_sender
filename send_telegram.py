@@ -33,6 +33,7 @@ if __name__ == "__main__":
     message = f"""⏰ {now}
 ₿ BTC: ${btc:,}
 💱 USDT/KRW: ₩{usdt:,}
+ddddddd
 """
 
     send_message(message)
