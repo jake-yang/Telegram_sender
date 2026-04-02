@@ -1,7 +1,6 @@
 import os
 import requests
 import yfinance as yf
-import feedparser
 from datetime import datetime
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -26,7 +25,9 @@ def get_finance_prices():
     tickers = {
         "NQ=F": "NASDAQ Futures",
         "TQQQ": "TQQQ",
-        "BZ=F": "Brent Oil"
+        "BZ=F": "Brent Oil",
+        "IGLD": "IGLD",
+        "QQQ": "QQQ"
     }
     results = {}
     try:
@@ -43,19 +44,6 @@ def get_finance_prices():
         print(f"Error fetching finance data: {e}")
         return {}
 
-def get_top_news():
-    try:
-        # Yahoo Finance RSS
-        rss_url = "https://finance.yahoo.com/rss/topstories"
-        feed = feedparser.parse(rss_url)
-        if feed.entries:
-            latest = feed.entries[0]
-            return f"{latest.title}\n{latest.link}"
-        return "No news found."
-    except Exception as e:
-        print(f"Error fetching news: {e}")
-        return "Failed to fetch news."
-
 def send_message(text):
     if not TOKEN or not CHAT_ID:
         print("Telegram configuration missing.")
@@ -70,7 +58,7 @@ def send_message(text):
 if __name__ == "__main__":
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    # 1. First Message: Prices
+    # Prices
     btc, usdt = get_crypto_prices()
     finance_data = get_finance_prices()
     
@@ -82,8 +70,5 @@ if __name__ == "__main__":
     
     for name, price in finance_data.items():
         price_msg += f"📈 {name}: ${price:,.2f}\n"
-
-    # Add Top Headline to the same message
-    price_msg += f"\n📰 Top Headline News:\n{get_top_news()}"
     
     send_message(price_msg)
