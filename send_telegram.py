@@ -82,9 +82,8 @@ if __name__ == "__main__":
     
     for name, price in finance_data.items():
         price_msg += f"📈 {name}: ${price:,.2f}\n"
+
+    # Add Top Headline to the same message
+    price_msg += f"\n📰 Top Headline News:\n{get_top_news()}"
     
     send_message(price_msg)
-    
-    # 2. Second Message: Top Headline
-    news_msg = f"📰 Top Headline News:\n{get_top_news()}"
-    send_message(news_msg)
