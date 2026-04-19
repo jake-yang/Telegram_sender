@@ -6,28 +6,14 @@ from datetime import datetime
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-def get_crypto_prices():
-    try:
-        url = "https://api.coingecko.com/api/v3/simple/price"
-        params = {
-            "ids": "bitcoin,tether",
-            "vs_currencies": "usd,krw"
-        }
-        res = requests.get(url, params=params).json()
-        btc_usd = res["bitcoin"]["usd"]
-        usdt_krw = res["tether"]["krw"]
-        return btc_usd, usdt_krw
-    except Exception as e:
-        print(f"Error fetching crypto: {e}")
-        return None, None
-
 def get_finance_prices():
     tickers = {
-        "NQ=F": "NASDAQ Futures",
+        "BTC-USD": "BTC-USD",
+        "^GSPC": "S&P 500",
+        "^IXIC": "NASDAQ",
+        "USDT-KRW=X": "USDT/KRW",
         "TQQQ": "TQQQ",
-        "BZ=F": "Brent Oil",
-        "IGLD": "IGLD",
-        "QQQ": "QQQ"
+        "IGLD": "IGLD"
     }
     results = {}
     try:
@@ -59,16 +45,21 @@ if __name__ == "__main__":
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # Prices
-    btc, usdt = get_crypto_prices()
     finance_data = get_finance_prices()
     
     price_msg = f"⏰ {now}\n"
-    if btc:
-        price_msg += f"₿ BTC: ${btc:,}\n"
-    if usdt:
-        price_msg += f"💱 USDT/KRW: ₩{usdt:,}\n"
+    # Order to match user request: BTC-USD, S&P 500, NASDAQ, USDT/KRW, TQQQ, IGLD
+    order = ["BTC-USD", "S&P 500", "NASDAQ", "USDT/KRW", "TQQQ", "IGLD"]
     
-    for name, price in finance_data.items():
-        price_msg += f"📈 {name}: ${price:,.2f}\n"
+    for name in order:
+        if name in finance_data:
+            price = finance_data[name]
+            # Use appropriate formatting based on asset
+            if name == "BTC-USD":
+                price_msg += f"₿ BTC: ${price:,.0f}\n"
+            elif name == "USDT/KRW":
+                price_msg += f"💱 USDT/KRW: ₩{price:,.2f}\n"
+            else:
+                price_msg += f"📈 {name}: ${price:,.2f}\n"
     
     send_message(price_msg)

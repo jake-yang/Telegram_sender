@@ -3,7 +3,7 @@ name: Telegram Price Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'   # every hour
+    - cron: '0 */2 * * *'   # every 2 hours
 
 jobs:
   run:
